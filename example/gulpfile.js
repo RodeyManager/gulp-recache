@@ -11,9 +11,9 @@ gulp.task('build.cache', function(){
 
     gulp.src('src/**/*')
         .pipe(reCache({
-            //地址后面的query值
-            queryKey: '_rvc_',
             //query的key值
+            queryKey: '_rvc_',
+            //地址后面的query值
             queryVal: '@hash',
             //生成的hash长度
             hashSize: 10,
