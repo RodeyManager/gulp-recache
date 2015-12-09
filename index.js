@@ -10,28 +10,36 @@ var fs          = require('fs'),
     T           = require('./lib/tools'),
     _           = require('lodash');
 
-var PLUGIN_NAME = 'gulp-revesion';
+var PLUGIN_NAME = 'gulp-recache';
 
 //递归处理
-var updateQuery = function(filePath, options){
+var updateQuery = function(filePath, content, options){
 
-    var type = F.getFileType(filePath),
-        content = F.getFileContent(filePath),
+    var content = content || F.getFileContent(filePath),
         regxs = T.getRecuRegx(),
         hashSize = options.hashSize || 10,
         queryKey = options.queryKey || '_rvc_',
         queryVal = options.queryVal || '@hash',
-        cls      = options.toBase64;
+        cls      = options.toBase64,
+        toPredir = options['toPredir'] || {},
+        imagePd  = toPredir['image'] || '',
+        cssPd    = toPredir['css'];
 
     //遍历正则检索
     _.each(regxs, function(item){
 
         content = content.replace(item, function(spec, src){
 
-            //判断是否是网络文件
-            if(/^(https*?:\/\/|about:|javascript:|data:[\s\S]*?base64)/gi.test(src)){
+            if(!src || '' === src){
                 return spec;
             }
+            //判断是否是网络文件
+            if(/^(https*?:\/\/|about:|javascript:|data:|<%|\{)/gi.test(src)){
+                return spec;
+            }
+
+            //获取文件类型
+            var type = F.getFileType(src);
 
             //是否已存在query
             var ms = src.split('?');
@@ -39,29 +47,46 @@ var updateQuery = function(filePath, options){
                 query = ms[1] || '';
             //重置query key
             if(query && query === queryKey){
-                queryKey = '_rvc_' + Math.random() * 100;
+                queryKey = queryKey + Math.random() * 100;
             }
 
             //获取文件hash值 | 时间戳
-            var fp = path.normalize(path.dirname(filePath) + path.sep + url),
-                ft = path.extname(src).replace('^.', ''),
-                hash = F.getFileHash(fp, hashSize),
+            var fp;
+            if('css' === type){
+                fp = path.normalize(path.dirname(filePath) + path.sep + cssPd + url);
+            }
+            else if('image' === type){
+                fp = path.normalize(path.dirname(filePath) + path.sep + imagePd + url);
+            }
+            //console.log('spec: ', spec);
+            //console.log('src: ', src);
+            //console.log('fp: ', fp);
+            if(!fs.existsSync(fp)){
+                return spec;
+            }
+            var hash = F.getFileHash(fp, hashSize),
                 time = String((new Date()).getTime()).substring(8, 13),
                 rs;
 
             //将图片转为base64位
-            var className = T.toBase64Regx.exec(spec);
-            if(className && className[1]){
-                var base64;
-                for(var i = 0, len = cls.length; i < len; ++i){
-                    if(className[1].indexOf(cls[i]) !== -1){
-                        base64 = F.getFileBase64(fp);
-                        break;
+            if(cls){
+                var className = T.toBase64Regx.exec(spec);
+                if(className && className[1]){
+                    T.toBase64Regx.lastIndex = 0;
+                    var base64,
+                        ft = path.extname(src).replace('^.', '');
+                    for(var i = 0, len = cls.length; i < len; ++i){
+                        if(className[1].indexOf(cls[i]) !== -1){
+                            base64 = F.getFileBase64(fp);
+                            break;
+                        }
+                    }
+                    if(base64){
+                        base64 = 'data:image/'+ ft +';base64,' + base64;
+                        rs = spec.replace(src, base64);
+                        return rs;
                     }
                 }
-                base64 = 'data:image/'+ ft +';base64,' + base64;
-                rs = spec.replace(src, base64);
-                return rs;
             }
 
             //拼接地址进行替换
@@ -69,6 +94,7 @@ var updateQuery = function(filePath, options){
             qv = queryKey + '=' + qv;
             url = url + '?' + (query.length > 0 ? query + '&' : '') + qv;
             rs = spec.replace(src, url);
+            //console.log(rs);
 
             return rs;
 
@@ -86,7 +112,7 @@ var getContent = function(file, options){
     var filePath = file.path,
         type = F.getFileType(filePath);
 
-    if(!/(html|js|css)/gi.test(type)){
+    if(!/(html|css)/gi.test(type)){
         return file.contents;
     }
 
@@ -96,7 +122,7 @@ var getContent = function(file, options){
     }
 
     //查找并替换
-    content = updateQuery(filePath, options);
+    content = updateQuery(filePath, content, options);
 
     return content;
 
