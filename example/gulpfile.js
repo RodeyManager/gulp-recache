@@ -11,14 +11,16 @@ gulp.task('build.cache', function(){
 
     gulp.src('src/**/*')
         .pipe(reCache({
-            //queryµÄkeyÖµ
+            //queryçš„keyå€¼
             queryKey: '_rvc_',
-            //µØÖ·ºóÃæµÄqueryÖµ
+            //åœ°å€åé¢çš„queryå€¼
             queryVal: '@hash',
-            //Éú³ÉµÄhash³¤¶È
+            //ç”Ÿæˆçš„hashé•¿åº¦
             hashSize: 10,
-            //½«ĞèÒª×ª³öbase64µÄimgÉÏµÄclassÀàÃû
-            toBase64: ['user-icon']
+            //å°†éœ€è¦è½¬å‡ºbase64çš„imgä¸Šçš„classç±»å
+            toBase64: ['user-icon'],
+            //ä¹Ÿå¯ä»¥åœ¨uriåé¢å¸¦ä¸Šéœ€è¦è½¬ä¸ºbase64çš„query key, é»˜è®¤ '_tobase64'
+            toBase64_QK: '_tobase64'
         }))
         .pipe(gulp.dest('dist'));
 

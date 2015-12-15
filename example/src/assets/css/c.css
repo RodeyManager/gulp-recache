@@ -1,3 +1,6 @@
 p{
     background: url("../images/v1.1.jpg") no-repeat center center;
 }
+.test-p3{
+    background-image: url("../images/user.png?_tobase64");
+}

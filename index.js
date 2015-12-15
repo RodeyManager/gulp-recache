@@ -15,15 +15,18 @@ var PLUGIN_NAME = 'gulp-recache';
 //递归处理
 var updateQuery = function(filePath, content, options){
 
-    var content = content || F.getFileContent(filePath),
-        regxs = T.getRecuRegx(),
-        hashSize = options.hashSize || 10,
-        queryKey = options.queryKey || '_rvc_',
-        queryVal = options.queryVal || '@hash',
-        cls      = options.toBase64,
-        toPredir = options['toPredir'] || {},
-        imagePd  = toPredir['image'] || '',
-        cssPd    = toPredir['css'];
+    var content     = content || F.getFileContent(filePath),
+        regxs       = T.getRecuRegx(),
+        hashSize    = options.hashSize || 10,
+        queryKey    = options.queryKey || '_rvc_',
+        queryVal    = options.queryVal || '@hash',
+        cls         = options.toBase64,
+        b64_qk      = options.toBase64_QK || '_tobase64',
+        queryRegx   = new RegExp('&*'+ b64_qk +'[=|&]?', 'i'),
+        toPredir    = options['toPredir'] || {},
+        imagePd     = toPredir['image'] || '',
+        cssPd       = toPredir['css'] || '',
+        jsPd        = toPredir['js'];
 
     //遍历正则检索
     _.each(regxs, function(item){
@@ -58,23 +61,39 @@ var updateQuery = function(filePath, content, options){
             else if('image' === type){
                 fp = path.normalize(path.dirname(filePath) + path.sep + imagePd + url);
             }
+            else if('js' === type){
+                fp = path.normalize(path.dirname(filePath) + path.sep + jsPd + url);
+            }
+            else{
+                fp = path.normalize(path.dirname(filePath) + path.sep + url);
+            }
             //console.log('spec: ', spec);
             //console.log('src: ', src);
             //console.log('fp: ', fp);
-            if(!fs.existsSync(fp)){
+            if(!fp || !fs.existsSync(fp)){
                 return spec;
             }
             var hash = F.getFileHash(fp, hashSize),
                 time = String((new Date()).getTime()).substring(8, 13),
-                rs;
+                rs, ft, base64;
 
             //将图片转为base64位
-            if(cls){
+            if(T.getParams(b64_qk, src) !== undefined){
+
+                ft = path.extname(src).replace(/^./i, '').split('?')[0];
+                base64 = F.getFileBase64(fp);
+                if(base64){
+                    base64 = 'data:image/'+ ft +';base64,' + base64;
+                    rs = spec.replace(src, base64);
+                    return rs;
+                }
+            }
+            else if(cls){
+
                 var className = T.toBase64Regx.exec(spec);
                 if(className && className[1]){
                     T.toBase64Regx.lastIndex = 0;
-                    var base64,
-                        ft = path.extname(src).replace('^.', '');
+                    ft = path.extname(src).replace(/^./i, '').split('?')[0];
                     for(var i = 0, len = cls.length; i < len; ++i){
                         if(className[1].indexOf(cls[i]) !== -1){
                             base64 = F.getFileBase64(fp);

@@ -25,6 +25,8 @@ gulp.task('build.cache', function(){
             hashSize: 10,
             //将需要转出base64的img上的class类名
             toBase64: ['to-base64'],
+            //也可以在uri后面带上需要转为base64的query key, 默认 '_tobase64'
+            toBase64_QK: '_tobase64',
             /**
             * 相对当前文件的toPredir路径进行查找
             * 如 当前文件路径是 project/src/views/index.html
