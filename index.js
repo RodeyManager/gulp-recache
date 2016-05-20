@@ -134,6 +134,7 @@ var getContent = function(file, options){
     if(!/(html|css)/gi.test(type)){
         return file.contents;
     }
+    //console.log(filePath);
 
     var content = file.contents.toString('utf-8');
     if('undefined' === content){
