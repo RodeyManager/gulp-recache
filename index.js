@@ -20,18 +20,20 @@ var updateQuery = function(filePath, content, options){
         hashSize    = options.hashSize || 10,
         queryKey    = options.queryKey || '_rvc_',
         queryVal    = options.queryVal || '@hash',
-        cls         = options.toBase64,
+        //cls         = options.toBase64,
         b64_qk      = options.toBase64_QK || '_tobase64',
-        queryRegx   = new RegExp('&*'+ b64_qk +'[=|&]?', 'i'),
+        b64Regx     = new RegExp('(\\?|\\&)+?'+ b64_qk +'', 'gi'),
+        basePath    = options['basePath'] || '',
         toPredir    = options['toPredir'] || {},
         imagePd     = toPredir['image'] || '',
         cssPd       = toPredir['css'] || '',
-        jsPd        = toPredir['js'];
+        jsPd        = toPredir['js'] || '';
 
     //遍历正则检索
     _.each(regxs, function(item){
 
         content = content.replace(item, function(spec, src){
+            //console.log('spec: ', spec);
 
             if(!src || '' === src){
                 return spec;
@@ -56,16 +58,28 @@ var updateQuery = function(filePath, content, options){
             //获取文件hash值 | 时间戳
             var fp;
             if('css' === type){
-                fp = path.normalize(path.dirname(filePath) + path.sep + cssPd + url);
+                //fp = path.normalize(path.dirname(filePath) + path.sep + cssPd + url);
+                fp = _getPath(url, cssPd);
             }
             else if('image' === type){
-                fp = path.normalize(path.dirname(filePath) + path.sep + imagePd + url);
+                //fp = path.normalize(path.dirname(filePath) + path.sep + imagePd + url);
+                fp = _getPath(url, imagePd);
             }
             else if('js' === type){
-                fp = path.normalize(path.dirname(filePath) + path.sep + jsPd + url);
+                //fp = path.normalize(path.dirname(filePath) + path.sep + jsPd + url);
+                fp = _getPath(url, jsPd);
             }
             else{
-                fp = path.normalize(path.dirname(filePath) + path.sep + url);
+                //fp = path.normalize(path.dirname(filePath) + path.sep + url);
+                fp = _getPath(url, '');
+            }
+            function _getPath(url, predir){
+                if(basePath && '' !== basePath){
+                    fp = path.resolve(basePath, url);
+                }else{
+                    fp = path.normalize(path.dirname(filePath) + path.sep + predir + url);
+                }
+                return fp;
             }
             //console.log('spec: ', spec);
             //console.log('src: ', src);
@@ -88,25 +102,26 @@ var updateQuery = function(filePath, content, options){
                     return rs;
                 }
             }
-            else if(cls){
 
-                var className = T.toBase64Regx.exec(spec);
-                if(className && className[1]){
-                    T.toBase64Regx.lastIndex = 0;
-                    ft = path.extname(src).replace(/^./i, '').split('?')[0];
-                    for(var i = 0, len = cls.length; i < len; ++i){
-                        if(className[1].indexOf(cls[i]) !== -1){
-                            base64 = F.getFileBase64(fp);
-                            break;
-                        }
-                    }
-                    if(base64){
-                        base64 = 'data:image/'+ ft +';base64,' + base64;
-                        rs = spec.replace(src, base64);
-                        return rs;
-                    }
-                }
-            }
+            //if(cls){
+            //
+            //    var className = T.toBase64Regx.exec(spec);
+            //    if(className && className[1]){
+            //        T.toBase64Regx.lastIndex = 0;
+            //        ft = path.extname(src).replace(/^./i, '').split('?')[0];
+            //        for(var i = 0, len = cls.length; i < len; ++i){
+            //            if(className[1].indexOf(cls[i]) !== -1){
+            //                base64 = F.getFileBase64(fp);
+            //                break;
+            //            }
+            //        }
+            //        if(base64){
+            //            base64 = 'data:image/'+ ft +';base64,' + base64;
+            //            rs = spec.replace(src, base64);
+            //            return rs;
+            //        }
+            //    }
+            //}
 
             //拼接地址进行替换
             var qv = queryVal.replace('@hash', hash).replace('@time', time);
