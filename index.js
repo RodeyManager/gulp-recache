@@ -20,9 +20,9 @@ var updateQuery = function(filePath, content, options){
         hashSize    = options.hashSize || 10,
         queryKey    = options.queryKey || '_rvc_',
         queryVal    = options.queryVal || '@hash',
-        //cls         = options.toBase64,
+        cls         = options.toBase64,
         b64_qk      = options.toBase64_QK || '_tobase64',
-        b64Regx     = new RegExp('(\\?|\\&)+?'+ b64_qk +'', 'gi'),
+        queryRegx   = new RegExp('(\\?|\\&)+?'+ b64_qk +'', 'gi'),
         basePath    = options['basePath'] || '',
         toPredir    = options['toPredir'] || {},
         imagePd     = toPredir['image'] || '',
@@ -50,7 +50,7 @@ var updateQuery = function(filePath, content, options){
             var ms = src.split('?');
             var url = ms[0],
                 query = ms[1] || '';
-            //重置query key
+            //重置query key（在url的地址上已经存在于设置的 queryKey同样的参数名时）
             if(query && query === queryKey){
                 queryKey = queryKey + Math.random() * 100;
             }
@@ -75,7 +75,7 @@ var updateQuery = function(filePath, content, options){
             }
             function _getPath(url, predir){
                 if(basePath && '' !== basePath){
-                    fp = path.resolve(basePath, url);
+                    fp = path.resolve(basePath, url.replace(/^[.\/]+/gi, ''));
                 }else{
                     fp = path.normalize(path.dirname(filePath) + path.sep + predir + url);
                 }
@@ -102,8 +102,7 @@ var updateQuery = function(filePath, content, options){
                     return rs;
                 }
             }
-
-            //if(cls){
+            //else if(cls){
             //
             //    var className = T.toBase64Regx.exec(spec);
             //    if(className && className[1]){
