@@ -20,9 +20,8 @@ var updateQuery = function(filePath, content, options){
         hashSize    = options.hashSize || 10,
         queryKey    = options.queryKey || '_rvc_',
         queryVal    = options.queryVal || '@hash',
-        cls         = options.toBase64,
         b64_qk      = options.toBase64_QK || '_tobase64',
-        queryRegx   = new RegExp('(\\?|\\&)+?'+ b64_qk +'', 'gi'),
+        queryKeyRegx = new RegExp(queryKey + '=?[^\&]*?', 'gi'),
         basePath    = options['basePath'] || '',
         toPredir    = options['toPredir'] || {},
         imagePd     = toPredir['image'] || '',
@@ -36,7 +35,7 @@ var updateQuery = function(filePath, content, options){
             //console.log('spec: ', spec);
 
             if(!src || '' === src){
-                return spec;
+                return '';
             }
             //判断是否是网络文件
             if(/^(https*?:\/\/|about:|javascript:|data:|<%|\{)/gi.test(src)){
@@ -50,7 +49,7 @@ var updateQuery = function(filePath, content, options){
             var ms = src.split('?');
             var url = ms[0],
                 query = ms[1] || '';
-            //重置query key（在url的地址上已经存在于设置的 queryKey同样的参数名时）
+            //重置query key
             if(query && query === queryKey){
                 queryKey = queryKey + Math.random() * 100;
             }
@@ -102,33 +101,16 @@ var updateQuery = function(filePath, content, options){
                     return rs;
                 }
             }
-            //else if(cls){
-            //
-            //    var className = T.toBase64Regx.exec(spec);
-            //    if(className && className[1]){
-            //        T.toBase64Regx.lastIndex = 0;
-            //        ft = path.extname(src).replace(/^./i, '').split('?')[0];
-            //        for(var i = 0, len = cls.length; i < len; ++i){
-            //            if(className[1].indexOf(cls[i]) !== -1){
-            //                base64 = F.getFileBase64(fp);
-            //                break;
-            //            }
-            //        }
-            //        if(base64){
-            //            base64 = 'data:image/'+ ft +';base64,' + base64;
-            //            rs = spec.replace(src, base64);
-            //            return rs;
-            //        }
-            //    }
-            //}
 
             //拼接地址进行替换
             var qv = queryVal.replace('@hash', hash).replace('@time', time);
             qv = queryKey + '=' + qv;
-            url = url + '?' + (query.length > 0 ? query + '&' : '') + qv;
+            if(query.length > 0 && queryKeyRegx.test(query)){
+                query = query.replace(queryKeyRegx, '');
+            }
+            url = url + '?' + (query.length > 0 ? query.replace(/\&$/i, '') + '&' + qv : qv);
             rs = spec.replace(src, url);
-            //console.log(rs);
-
+            //console.log(url);
             return rs;
 
         });
