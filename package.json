@@ -1,6 +1,10 @@
 {
   "name": "gulp-recache",
+<<<<<<< HEAD
+  "version": "1.0.5",
+=======
   "version": "1.0.4",
+>>>>>>> d9899d4187b86e1c7fa8f0726a5f8df6992bd1e0
   "description": "静态文件缓存控制更新",
   "main": "index.js",
   "scripts": {

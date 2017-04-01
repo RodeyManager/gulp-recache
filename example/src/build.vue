@@ -14,7 +14,7 @@
             background: white url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABCUlEQVRYR+2VWxHCMBQFtwpAAg4ACUhAAeAIByAFCTgACUhgLtMwTcjrNqT9SX7Tmd2e+0jHzKebmU8TaAlMlcAZWAN74DVs/CkErsChh96B3VCitsAQbn7ckqgp4IMbiS0gItX2QAx+AuT+c2okkA2PCaz6RrE6NmNtq+AhgSNw6WtkdWxCQA33CRi4t2MjAqPgroDE/vBAfmbX+WY03BVYAk9goZAogvtKsAFumRLF8FAT5kjIbjfr1Q3MmvPU5IT2QExCRlPK5TsqeGoRxST+Ak8JyH2uhPrPNas4JTEanpOAEQ1JFME1Ar5yFMO1AkZC5l/G8PukpkYtdl/jOVb5NIGWwOwJvAGbLT4hqP8mOgAAAABJRU5ErkJggg==") repeat center center;
         }
         .test-p1{
-            background: #000080 url("assets/images/v4.jpg") no-repeat left top;
+            background: #000080 url("assets/images/v4.jpg?_rvc_=89800&_d=90") no-repeat left top;
         }
         .test-p2{
             background-image: url("assets/images/v4.jpg");
@@ -27,11 +27,7 @@
     <div class="app product-app details" id="app">
         <img src="assets/images/v1.jpg" alt=""/>
         <img src="assets/images/v1.1.jpg" alt=""/>
-<<<<<<< HEAD
         <img src="assets/images/user.png" alt=""/>
-=======
-        <img src="assets/images/user.png" class="user-icon" alt=""/>
->>>>>>> d9899d4187b86e1c7fa8f0726a5f8df6992bd1e0
         <img src="assets/images/user.png?_tobase64" alt=""/>
         <div class="content">
             <p id="content">

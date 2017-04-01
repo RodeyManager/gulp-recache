@@ -1,5 +1,5 @@
 /**
- * Created by Rodey on 2015/11/5.
+ * Created by Rodey on 2016/11/5.
  */
 
 var fs          = require('fs'),
@@ -21,7 +21,13 @@ var updateQuery = function(filePath, content, options){
         queryKey    = options.queryKey || '_rvc_',
         queryVal    = options.queryVal || '@hash',
         b64_qk      = options.toBase64_QK || '_tobase64',
+<<<<<<< HEAD
+        // 限制图片转base64大小
+        limit       = parseFloat(options['toBase64Limit'], 10) || 1000,
+        queryKeyRegx = new RegExp(queryKey + '=([^&]+?)(&|$)', 'gi'),
+=======
         queryKeyRegx = new RegExp(queryKey + '=?[^\&]*?', 'gi'),
+>>>>>>> d9899d4187b86e1c7fa8f0726a5f8df6992bd1e0
         basePath    = options['basePath'] || '',
         toPredir    = options['toPredir'] || {},
         imagePd     = toPredir['image'] || '',
@@ -32,7 +38,11 @@ var updateQuery = function(filePath, content, options){
     _.each(regxs, function(item){
 
         content = content.replace(item, function(spec, src){
+<<<<<<< HEAD
+            // console.log('spec: ', spec);
+=======
             //console.log('spec: ', spec);
+>>>>>>> d9899d4187b86e1c7fa8f0726a5f8df6992bd1e0
 
             if(!src || '' === src){
                 return '';
@@ -49,14 +59,22 @@ var updateQuery = function(filePath, content, options){
             var ms = src.split('?');
             var url = ms[0],
                 query = ms[1] || '';
-            //重置query key
-            if(query && query === queryKey){
-                queryKey = queryKey + Math.random() * 100;
-            }
 
             //获取文件hash值 | 时间戳
             var fp;
             if('css' === type){
+<<<<<<< HEAD
+                // console.log(url, cssPd);
+                fp = _getPath(url, cssPd);
+            }
+            else if('image' === type){
+                fp = _getPath(url, imagePd);
+            }
+            else if('js' === type){
+                fp = _getPath(url, jsPd);
+            }
+            else{
+=======
                 //fp = path.normalize(path.dirname(filePath) + path.sep + cssPd + url);
                 fp = _getPath(url, cssPd);
             }
@@ -70,6 +88,7 @@ var updateQuery = function(filePath, content, options){
             }
             else{
                 //fp = path.normalize(path.dirname(filePath) + path.sep + url);
+>>>>>>> d9899d4187b86e1c7fa8f0726a5f8df6992bd1e0
                 fp = _getPath(url, '');
             }
             function _getPath(url, predir){
@@ -91,6 +110,17 @@ var updateQuery = function(filePath, content, options){
                 rs, ft, base64;
 
             //将图片转为base64位
+<<<<<<< HEAD
+            if('image' === type){
+                if(T.getParams(b64_qk, src) !== undefined || F.getFileSize(fp).size <= limit){
+                    ft = path.extname(src).replace(/^./i, '').split('?')[0];
+                    base64 = F.getFileBase64(fp);
+                    if(base64){
+                        base64 = 'data:image/'+ ft +';base64,' + base64;
+                        rs = spec.replace(src, base64);
+                        return rs;
+                    }
+=======
             if(T.getParams(b64_qk, src) !== undefined){
 
                 ft = path.extname(src).replace(/^./i, '').split('?')[0];
@@ -99,6 +129,7 @@ var updateQuery = function(filePath, content, options){
                     base64 = 'data:image/'+ ft +';base64,' + base64;
                     rs = spec.replace(src, base64);
                     return rs;
+>>>>>>> d9899d4187b86e1c7fa8f0726a5f8df6992bd1e0
                 }
             }
 
@@ -125,9 +156,10 @@ var updateQuery = function(filePath, content, options){
 var getContent = function(file, options){
 
     var filePath = file.path,
-        type = F.getFileType(filePath);
+        type = F.getFileType(filePath),
+        reg = /(html|css|vue)/gi;
 
-    if(!/(html|css)/gi.test(type)){
+    if(!reg.test(type)){
         return file.contents;
     }
     //console.log(filePath);
