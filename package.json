@@ -26,6 +26,7 @@
   "homepage": "https://github.com/RodeyManager/gulp-recache#readme",
   "devDependencies": {
     "gulp": "^3.9.0",
+    "gulp-sftp": "^0.1.5",
     "gulp-watch": "^4.3.5"
   },
   "dependencies": {

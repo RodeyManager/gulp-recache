@@ -9,6 +9,21 @@ var gulp        = require('gulp'),
 var config = require('../package.json');
 
 
+var sftp = require('gulp-sftp');
+gulp.task('publish', function(){
+    return gulp.src('dist/**/*')
+        .pipe(sftp({
+            host: '10.142.146.42',
+            user: 'root',
+            pass: 'root123',
+            remotePath: '/var/www/ESales/pc',
+            callback: function(){
+                console.log('上传完成');
+            }
+        }));
+});
+
+
 gulp.task('build.cache', function(){
 
     gulp.src('src/**/*')

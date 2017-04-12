@@ -34,13 +34,10 @@ var updateQuery = function(filePath, content, options){
     _.each(regxs, function(item){
 
         content = content.replace(item, function(spec, src){
-            // console.log('spec: ', spec);
+            // console.log('spec: ', spec, '   src: ', src);
 
-            if(!src || '' === src){
-                return '';
-            }
             //判断是否是网络文件
-            if(/^(https*?:\/\/|about:|javascript:|data:|<%|\{)/gi.test(src)){
+            if(!src || '' === src || /^(https*?:\/\/|about:|javascript:|data:|<%|\{)/gi.test(src)){
                 return spec;
             }
 
