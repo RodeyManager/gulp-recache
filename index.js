@@ -4,6 +4,7 @@
 
 var fs          = require('fs'),
     path        = require('path'),
+    nodeUrl        = require('url'),
     through2    = require('through2'),
     PluginError = require('gulp-util').PluginError,
     F           = require('./lib/file'),

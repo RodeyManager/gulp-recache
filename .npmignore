@@ -8,4 +8,6 @@ ehthumbs.db
 node_modules
 example
 npm-debug.log
+.idea
+.vscode
 

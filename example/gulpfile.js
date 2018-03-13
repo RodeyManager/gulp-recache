@@ -1,30 +1,15 @@
 /**
  * Created by Rodey on 2015/11/6.
  */
+'use strict';
 
-var gulp        = require('gulp'),
-    watch       = require('gulp-watch'),
+const
+    gulp        = require('gulp'),
     reCache     = require('../index');
 
-var config = require('../package.json');
+// const config = require('../package.json');
 
-
-var sftp = require('gulp-sftp');
-gulp.task('publish', function(){
-    return gulp.src('dist/**/*')
-        .pipe(sftp({
-            host: '10.142.146.42',
-            user: 'root',
-            pass: 'root123',
-            remotePath: '/var/www/ESales/pc',
-            callback: function(){
-                console.log('上传完成');
-            }
-        }));
-});
-
-
-gulp.task('build.cache', function(){
+gulp.task('build.cache', () => {
 
     gulp.src('src/**/*')
         .pipe(reCache({
@@ -42,6 +27,16 @@ gulp.task('build.cache', function(){
 
 });
 
+gulp.task('build.cache.rename', (done) => {
 
-gulp.task('default', ['build.cache']);
+    gulp.src('src/**/*')
+        .pipe(reCache({
+            rename: '@hash-v1.0',
+            hashSize: 10,
+            toBase64Limit: 1000,
+            basePath: 'dist/rename'
+        }))
+        .pipe(gulp.dest('dist/rename'));
+
+});
 
