@@ -76,3 +76,4 @@ $RECYCLE.BIN/
 
 .idea
 .vscode
+package-lock.json

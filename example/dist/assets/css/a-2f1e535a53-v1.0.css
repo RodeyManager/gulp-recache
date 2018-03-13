@@ -1,0 +1,8 @@
+@import url("c.css?_rvc_=1e89480cc6");
+
+.test-p1{
+    background: #000080 url("../images/v4.jpg?_rvc_=bed9c113db") no-repeat left top;
+}
+.test-p2{
+    background-image: url("../images/v4.jpg?_rvc_=bed9c113db");
+}
